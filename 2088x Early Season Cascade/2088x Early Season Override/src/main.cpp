@@ -90,5 +90,20 @@ void opcontrol() {
 		left_mg.move(dir - turn);                      // Sets left motor voltage
 		right_mg.move(dir + turn);                     // Sets right motor voltage
 		pros::delay(20);                               // Run for 20 ms then update
+	
+	//intake/lift
+		if (master.get_digital(DIGITAL_R1)) {
+			cascade_intake.move_voltage(12000);
+		} else if (master.get_digital(DIGITAL_R2)) {
+			cascade_intake.move_voltage(-12000);
+		} else {
+			cascade_intake.move_voltage(0);
+		}
+	//two bar
+		if (master.get_digital(DIGITAL_L1)) {
+			nextState();
+		}
+	//
+	
 	}
 }
