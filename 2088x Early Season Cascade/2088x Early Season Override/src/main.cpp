@@ -29,6 +29,13 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+
+	    pros::Task twoBarTask({
+        while (true) {
+            twoBarLoop();
+            pros::delay(10);
+        }
+    });
 }
 
 /**
@@ -87,8 +94,8 @@ void opcontrol() {
 		// Arcade control scheme
 		int dir = master.get_analog(ANALOG_LEFT_Y);    // Gets amount forward/backward from left joystick
 		int turn = master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right joystick
-		left_mg.move(dir - turn);                      // Sets left motor voltage
-		right_mg.move(dir + turn);                     // Sets right motor voltage
+		left_mg.move(dir + turn);                      // Sets left motor voltage
+		right_mg.move(dir - turn);                     // Sets right motor voltage
 		pros::delay(20);                               // Run for 20 ms then update
 	
 	//intake/lift
@@ -104,6 +111,17 @@ void opcontrol() {
 			nextState();
 		}
 	//
+
+	//claw
+		if (master.get_digital(DIGITAL_L2)) {
+			claw.move_voltage(12000);
+		} else if (master.get_digital(DIGITAL_R2)) {
+			claw.move_voltage(0);
+			clawPiston.retract();
+		} else {
+			claw.move_voltage(0);
+			clawPiston.extend();
+		}
 	
 	}
 }
