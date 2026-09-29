@@ -30,12 +30,12 @@ void initialize() {
 
 	pros::lcd::register_btn1_cb(on_center_button);
 
-	    pros::Task twoBarTask({
-        while (true) {
-            twoBarLoop();
-            pros::delay(10);
-        }
-    });
+	//     pros::Task twoBarTask({
+    //     while (true) {
+    //         twoBarLoop();
+    //         pros::delay(10);
+    //     }
+    // });
 }
 
 /**
