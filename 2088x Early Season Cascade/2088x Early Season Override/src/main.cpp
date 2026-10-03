@@ -18,6 +18,17 @@ void on_center_button() {
 	}
 }
 
+// Background task: runs every PID/auto-control function once per 10 ms.
+// None of the functions called in here may contain their own while(true)!
+void pidLoop(void* param) {
+	while (true) {
+		wristControl(); // decide wrist target first
+		wristLoop();
+		twoBarLoop();
+		pros::delay(10);
+	}
+}
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -30,12 +41,12 @@ void initialize() {
 
 	pros::lcd::register_btn1_cb(on_center_button);
 
-	//     pros::Task twoBarTask({
-    //     while (true) {
-    //         twoBarLoop();
-    //         pros::delay(10);
-    //     }
-    // });
+	// Assumes the wrist and arm are at their 0 position when the program starts
+	wristRotation.reset_position();
+	two_barRotation.reset_position();
+	pros::delay(50); // give the sensors a moment to settle
+
+	pros::Task pidTask(pidLoop, nullptr, "PID Task");
 }
 
 /**
@@ -83,22 +94,22 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	
-
-
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);  // Prints status of the emulated screen LCDs
+
+		// Debug: watch these while tuning the PID
+		// pros::lcd::print(3, "wrist %d -> %d", wristRotation.get_position(), target1);
+		// pros::lcd::print(4, "arm   %d -> %d", two_barRotation.get_position(), target);
 
 		// Arcade control scheme
 		int dir = master.get_analog(ANALOG_LEFT_Y);    // Gets amount forward/backward from left joystick
 		int turn = master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right joystick
 		left_mg.move(dir + turn);                      // Sets left motor voltage
 		right_mg.move(dir - turn);                     // Sets right motor voltage
-		pros::delay(20);                               // Run for 20 ms then update
-	
-	//intake/lift
+
+		// intake/lift
 		if (master.get_digital(DIGITAL_R1)) {
 			cascade_intake.move_voltage(12000);
 		} else if (master.get_digital(DIGITAL_R2)) {
@@ -106,13 +117,16 @@ void opcontrol() {
 		} else {
 			cascade_intake.move_voltage(0);
 		}
-	//two bar
-		if (master.get_digital(DIGITAL_L1)) {
-			nextState();
-		}
-	//
 
-	//claw
+		// two bar: L1 cycles the arm through its preset positions
+		if (master.get_digital_new_press(DIGITAL_L1)) {
+			backMatchloadCycle();
+		}
+
+		// claw
+		// NOTE: R2 is also used by the intake above, so pressing R2 will
+		// reverse the intake AND retract the claw piston. Change one of them
+		// to a different button if that isn't what you want.
 		if (master.get_digital(DIGITAL_L2)) {
 			claw.move_voltage(12000);
 		} else if (master.get_digital(DIGITAL_R2)) {
@@ -122,6 +136,7 @@ void opcontrol() {
 			claw.move_voltage(0);
 			clawPiston.extend();
 		}
-	
+
+		pros::delay(20); // delay goes at the END of the loop
 	}
 }
