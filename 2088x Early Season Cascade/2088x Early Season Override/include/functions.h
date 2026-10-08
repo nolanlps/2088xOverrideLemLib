@@ -9,3 +9,4 @@ void twoBarLoop();
 void twoBarSet(int degrees);
 void backMatchloadCycle();
 void wristControl();
+extern bool autoWristControl();

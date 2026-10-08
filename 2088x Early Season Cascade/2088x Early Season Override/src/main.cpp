@@ -120,7 +120,7 @@ void opcontrol() {
 
 		// two bar: L1 cycles the arm through its preset positions
 		if (master.get_digital_new_press(DIGITAL_L1)) {
-			backMatchloadCycle();
+			twoBarSet(280);
 		}
 
 		// claw
