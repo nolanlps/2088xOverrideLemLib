@@ -28,7 +28,7 @@ bool wristAutoControl = true;
 void wristLoop() {
     // TUNING: raise kp until it moves well, raise kd to stop overshoot.
     const double kp1 = 1.75;
-    const double kd1 = 9.25;
+    const double kd1 = 9.6;
 
     int pos = wristRotation.get_position();
     if (pos == PROS_ERR) return; // sensor read failed, don't drive blindly
@@ -50,7 +50,7 @@ void wristControl() {
     if (!wristAutoControl) return;
 
     // Arm angle thresholds in centidegrees (these were 210 / 275 degrees)
-    const int TRACK_START = 20000;
+    const int TRACK_START = 16300;
     const int BACK_START = 2500;
     const int tung_start = 8000;
     const int BAD_START = 17000;
@@ -60,10 +60,10 @@ void wristControl() {
 
     if (arm < BACK_START) {
         wristSet(0);              // arm is all the way back
-    } else if (arm > BACK_START && arm < tung_start) {
+    } else if (arm > BACK_START) {
         wristSet(-(arm - BAD_START));
-    } else if (arm > tung_start) {
-        wristSet((arm - TRACK_START));  // wrist follows arm, starting from 0
+    // } else if (arm > tung_start) {
+    //     wristSet((arm - TRACK_START));  // wrist follows arm, starting from 0
     } else {
         wristSet(0);                  // arm is in the normal range
     }
@@ -79,15 +79,15 @@ void wristSet(int centidegrees) {
 // TWO BAR (ARM) PID
 ////////////////////////////////////////////////////////////////
 int target = 0;
-const int numStates = 3;
-int states[numStates] = {0, 26000, 18000}; // 0, 300, 180 degrees
+const int numStates = 2;
+int states[numStates] = {0, 27600}; // 0, 300, 180 degrees
 int currState = 0;
 static int lastTwoBarPos = 0;
 
 void twoBarLoop() {
     // TUNING: the arm is heavier than the wrist, so it may need more kd.
-    const double kp = 4.2;
-    const double kd = 14;
+    const double kp = 3;
+    const double kd = 15;
 
     int pos = two_barRotation.get_position();
     if (pos == PROS_ERR) return;
@@ -102,22 +102,37 @@ void twoBarLoop() {
     two_bar.move_voltage(static_cast<int32_t>(output));
 }
 
+
+const int numStates1 = 2;
+int states1[numStates1] = {18000, 12000};
+int currState1 = 0;
+
+void highScoreCycle() {
+    currState1 = (currState1 + 1) % numStates;
+    if (currState1 == numStates1) {
+        currState1 = 0;
+    }
+    target = states1[currState1];
+}
+
 void backMatchloadCycle() {
     // wrap around so we never read past the end of states[]
     currState = (currState + 1) % numStates;
-
+    if (currState == numStates) {
+        currState = 0;
+    }
     // update the target FIRST, then make decisions based on the new target
     target = states[currState];
-
+    
     // Manual wrist flip only when auto control is off
     // (otherwise wristControl() would overwrite it within 10 ms anyway)
-    if (!wristAutoControl) {
-        if (target >= 30000) {
-            wristSet(18000); // flip wrist so it doesn't go out of size
-        } else if (target > 18000) {
-            wristSet(0);
-        }
-    }
+    // if (!wristAutoControl) {
+    //     if (target >= 30000) {
+    //         wristSet(18000); // flip wrist so it doesn't go out of size
+    //     } else if (target > 18000) {
+    //         wristSet(0);
+    //     }
+    // }
 }
 
 void twoBarSet(int degrees) {

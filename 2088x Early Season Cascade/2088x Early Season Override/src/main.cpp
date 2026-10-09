@@ -120,7 +120,11 @@ void opcontrol() {
 
 		// two bar: L1 cycles the arm through its preset positions
 		if (master.get_digital_new_press(DIGITAL_L1)) {
-			twoBarSet(280);
+			backMatchloadCycle();
+		}
+
+		if (master.get_digital_new_press(DIGITAL_Y)) {
+			highScoreCycle();
 		}
 
 		// claw
@@ -129,8 +133,9 @@ void opcontrol() {
 		// to a different button if that isn't what you want.
 		if (master.get_digital(DIGITAL_L2)) {
 			claw.move_voltage(12000);
-		} else if (master.get_digital(DIGITAL_R2)) {
-			claw.move_voltage(0);
+			clawPiston.extend();
+		} else if (master.get_digital(DIGITAL_RIGHT)) {
+			claw.move_voltage(-4000);
 			clawPiston.retract();
 		} else {
 			claw.move_voltage(0);
