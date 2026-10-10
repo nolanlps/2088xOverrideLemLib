@@ -110,20 +110,20 @@ void opcontrol() {
 		right_mg.move(dir - turn);                     // Sets right motor voltage
 
 		// intake/lift
-		if (master.get_digital(DIGITAL_R1)) {
+		if (master.get_digital(DIGITAL_Y)) {
 			cascade_intake.move_voltage(12000);
-		} else if (master.get_digital(DIGITAL_R2)) {
+		} else if (master.get_digital(DIGITAL_RIGHT)) {
 			cascade_intake.move_voltage(-12000);
 		} else {
 			cascade_intake.move_voltage(0);
 		}
 
 		// two bar: L1 cycles the arm through its preset positions
-		if (master.get_digital_new_press(DIGITAL_L1)) {
+		if (master.get_digital_new_press(DIGITAL_R2)) {
 			backMatchloadCycle();
 		}
 
-		if (master.get_digital_new_press(DIGITAL_Y)) {
+		if (master.get_digital_new_press(DIGITAL_R1)) {
 			highScoreCycle();
 		}
 
@@ -131,15 +131,15 @@ void opcontrol() {
 		// NOTE: R2 is also used by the intake above, so pressing R2 will
 		// reverse the intake AND retract the claw piston. Change one of them
 		// to a different button if that isn't what you want.
-		if (master.get_digital(DIGITAL_L2)) {
+		if (master.get_digital(DIGITAL_L1)) {
 			claw.move_voltage(12000);
 			clawPiston.extend();
-		} else if (master.get_digital(DIGITAL_RIGHT)) {
-			claw.move_voltage(-4000);
+		} else if (master.get_digital(DIGITAL_L2)) {
+			claw.move_voltage(0);
 			clawPiston.retract();
 		} else {
 			claw.move_voltage(0);
-			clawPiston.extend();
+			// claw.move_voltage(8000);
 		}
 
 		pros::delay(20); // delay goes at the END of the loop

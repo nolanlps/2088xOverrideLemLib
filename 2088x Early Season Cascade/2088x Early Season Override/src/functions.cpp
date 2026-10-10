@@ -53,7 +53,7 @@ void wristControl() {
     const int TRACK_START = 16300;
     const int BACK_START = 2500;
     const int tung_start = 8000;
-    const int BAD_START = 17000;
+    const int BAD_START = 16000;
 
     int arm = two_barRotation.get_position();
     if (arm == PROS_ERR) return;

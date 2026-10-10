@@ -11,4 +11,5 @@ pros::Rotation two_barRotation(7);
 pros::Motor wrist(1); // rotates the claw at the end of the twobar(5.5)
 pros::Rotation wristRotation(-12);
 pros::Motor claw(9); // its a claw(5.5)
-pros::adi::Pneumatics clawPiston('A', true);
+pros::adi::Encoder encoder({10, 'B', 'C'}, true);
+pros::adi::Pneumatics clawPiston({10, 'A'}, true); // starts retracted
