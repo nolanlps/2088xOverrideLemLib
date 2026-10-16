@@ -78,7 +78,9 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -110,37 +112,37 @@ void opcontrol() {
 		right_mg.move(dir - turn);                     // Sets right motor voltage
 
 		// intake/lift
-		if (master.get_digital(DIGITAL_L1)) {
+		if (master.get_digital(DIGITAL_Y)) {
 			cascade_intake.move_voltage(12000);
-		} else if (master.get_digital(DIGITAL_L1)) {
+		} else if (master.get_digital(DIGITAL_RIGHT)) {
 			cascade_intake.move_voltage(-12000);
 		} else {
 			cascade_intake.move_voltage(0);
 		}
 
 		// two bar: L1 cycles the arm through its preset positions
-		if (master.get_digital_new_press(DIGITAL_Y)) {
-			backMatchloadCycle();
+		if (master.get_digital(DIGITAL_L1)) {
+			claw.move_voltage(12000);
+		} else if (master.get_digital(DIGITAL_L2)) {
+			claw.move_voltage(0);
+			clawPiston.retract();
+		} else {
+			claw.move_voltage(0);
+			clawPiston.extend();
 		}
 
-		if (master.get_digital_new_press(DIGITAL_RIGHT)) {
-			highScoreCycle();
-		}
 
 		// claw
 		// NOTE: R2 is also used by the intake above, so pressing R2 will
 		// reverse the intake AND retract the claw piston. Change one of them
 		// to a different button if that isn't what you want.
 		if (master.get_digital(DIGITAL_R1)) {
-			claw.move_voltage(12000);
-			clawPiston.extend();
-		} else if (master.get_digital(DIGITAL_R2)) {
-			claw.move_voltage(0);
-			clawPiston.retract();
-		} else {
-			claw.move_voltage(0);
-			// claw.move_voltage(8000);
+twoBarSet(276);
 		}
+		if (master.get_digital(DIGITAL_R2)) {
+highScoreCycle();
+		} 
+
 
 		pros::delay(20); // delay goes at the END of the loop
 	}
