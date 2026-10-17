@@ -27,7 +27,7 @@ bool wristAutoControl = true;
 
 void wristLoop() {
     // TUNING: raise kp until it moves well, raise kd to stop overshoot.
-    const double kp1 = 1.75;
+    const double kp1 = 1.9;
     const double kd1 = 9.6;
 
     int pos = wristRotation.get_position();
@@ -50,20 +50,23 @@ void wristControl() {
     if (!wristAutoControl) return;
 
     // Arm angle thresholds in centidegrees (these were 210 / 275 degrees)
-    const int TRACK_START = 16300;
+    const int TRACK_START = 24000;
     const int BACK_START = 2500;
     const int tung_start = 8000;
     const int BAD_START = 16000;
+    const int goontime = 15000;
 
     int arm = two_barRotation.get_position();
     if (arm == PROS_ERR) return;
 
     if (arm < BACK_START) {
         wristSet(0);              // arm is all the way back
-    } else if (arm > BACK_START) {
+    } else if (arm > BACK_START && arm < tung_start) {
         wristSet(-(arm - BAD_START));
-    // } else if (arm > tung_start) {
-    //     wristSet((arm - TRACK_START));  // wrist follows arm, starting from 0
+    } else if (arm > tung_start && arm < goontime) {
+        wristSet((arm - TRACK_START));  // wrist follows arm, starting from 0
+    } else if (arm > goontime) {
+        wristSet(-(arm - BAD_START));
     } else {
         wristSet(0);                  // arm is in the normal range
     }
@@ -137,4 +140,11 @@ void backMatchloadCycle() {
 
 void twoBarSet(int degrees) {
     target = degrees * 100;
+}
+
+
+void cascadelift(int speed, int sec) {
+    cascade_intake.move_voltage(speed);
+    pros::delay(sec);
+    cascade_intake.move_voltage(0);
 }

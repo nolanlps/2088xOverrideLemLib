@@ -29,6 +29,20 @@ void pidLoop(void* param) {
 	}
 }
 
+void screenGoon(void* param) {
+        while (true) {
+            // print robot location to the brain screen
+            pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
+            pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
+            pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
+            // log position telemetry
+            lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
+            // delay to save resources
+            pros::delay(50);
+        }
+}
+
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -37,16 +51,18 @@ void pidLoop(void* param) {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
-
+	// pros::lcd::set_text(1, "Hello PROS User!");
 	pros::lcd::register_btn1_cb(on_center_button);
-
+	chassis.calibrate();
+	pros::Task pidTask(pidLoop, nullptr, "PID Task");
 	// Assumes the wrist and arm are at their 0 position when the program starts
 	wristRotation.reset_position();
 	two_barRotation.reset_position();
 	pros::delay(50); // give the sensors a moment to settle
 
-	pros::Task pidTask(pidLoop, nullptr, "PID Task");
+
+	pros::Task screenTask(screenGoon, nullptr, "ScreenGoonTest");
+
 }
 
 /**
@@ -79,7 +95,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	
+sawp();
 }
 
 /**
@@ -106,10 +122,11 @@ void opcontrol() {
 		// pros::lcd::print(4, "arm   %d -> %d", two_barRotation.get_position(), target);
 
 		// Arcade control scheme
-		int dir = master.get_analog(ANALOG_LEFT_Y);    // Gets amount forward/backward from left joystick
-		int turn = master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right joystick
-		left_mg.move(dir + turn);                      // Sets left motor voltage
-		right_mg.move(dir - turn);                     // Sets right motor voltage
+        int leftY = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+        int rightX = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+
+        // move the robot
+        chassis.arcade(leftY, rightX);
 
 		// intake/lift
 		if (master.get_digital(DIGITAL_Y)) {
@@ -122,8 +139,12 @@ void opcontrol() {
 
 		// two bar: L1 cycles the arm through its preset positions
 		if (master.get_digital(DIGITAL_L1)) {
-			claw.move_voltage(12000);
-		} else if (master.get_digital(DIGITAL_L2)) {
+pullToggle.extend();
+		} else {
+			pullToggle.retract();
+		}
+		
+		if (master.get_digital(DIGITAL_L2)) {
 			claw.move_voltage(0);
 			clawPiston.retract();
 		} else {
@@ -137,11 +158,18 @@ void opcontrol() {
 		// reverse the intake AND retract the claw piston. Change one of them
 		// to a different button if that isn't what you want.
 		if (master.get_digital(DIGITAL_R1)) {
-twoBarSet(276);
+twoBarSet(286);
+			claw.move_voltage(12000);
+// backMatchloadCycle();
 		}
-		if (master.get_digital(DIGITAL_R2)) {
+		if (master.get_digital_new_press(DIGITAL_R2)) {
 highScoreCycle();
-		} 
+		} else if (master.get_digital(DIGITAL_R2)) {
+			claw.move_voltage(12000);
+		}
+		if (master.get_digital_new_press(DIGITAL_DOWN)) {
+			twoBarSet(0);
+		}
 
 
 		pros::delay(20); // delay goes at the END of the loop

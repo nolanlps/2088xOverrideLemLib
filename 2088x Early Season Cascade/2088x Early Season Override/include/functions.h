@@ -11,3 +11,4 @@ void backMatchloadCycle();
 void wristControl();
 extern bool autoWristControl();
 void highScoreCycle();
+void cascadelift(int speed, int sec);
