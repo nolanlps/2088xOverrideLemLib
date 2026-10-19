@@ -169,6 +169,8 @@ highScoreCycle();
 		}
 		if (master.get_digital_new_press(DIGITAL_DOWN)) {
 			twoBarSet(0);
+		} else if (master.get_digital(DIGITAL_DOWN)) {
+			claw.move_voltage(12000);
 		}
 
 
