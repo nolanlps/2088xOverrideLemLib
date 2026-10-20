@@ -44,6 +44,7 @@ void wristLoop() {
 
     wrist.move_voltage(static_cast<int32_t>(output));
 }
+
 //////////////////////////////////////////////////////////////////////////
 // Runs ONCE per call (called every 10 ms from pidLoop). No while loop here!
 void wristControl() {
@@ -60,7 +61,7 @@ void wristControl() {
     if (arm == PROS_ERR) return;
 
     if (arm < BACK_START) {
-        wristSet(0);              // arm is all the way back
+        wristSet(0);
     } else if (arm > BACK_START && arm < tung_start) {
         wristSet(-(arm - BAD_START));
     } else if (arm > tung_start && arm < goontime) {
@@ -75,7 +76,7 @@ void wristControl() {
 
 
 void wristSet(int centidegrees) {
-    target1 = centidegrees;
+    target1 = centidegrees ;
 }
 
 ////////////////////////////////////////////////////////////////

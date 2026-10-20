@@ -1,7 +1,7 @@
 //main thingie
 #include "main.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
-
+double wristtarget = 0;
 /**
  * A callback function for LLEMU's center button.
  *
@@ -95,7 +95,8 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-sawp();
+threePin();
+
 }
 
 /**
@@ -137,6 +138,10 @@ void opcontrol() {
 			cascade_intake.move_voltage(0);
 		}
 
+if (master.get_digital_new_press(DIGITAL_B)) {
+wristAutoControl = !wristAutoControl;
+}
+
 		// two bar: L1 cycles the arm through its preset positions
 		if (master.get_digital(DIGITAL_L1)) {
 pullToggle.extend();
@@ -146,10 +151,10 @@ pullToggle.extend();
 		
 		if (master.get_digital(DIGITAL_L2)) {
 			claw.move_voltage(0);
-			clawPiston.retract();
+			clawPiston.extend();
 		} else {
 			claw.move_voltage(0);
-			clawPiston.extend();
+			clawPiston.retract();
 		}
 
 
