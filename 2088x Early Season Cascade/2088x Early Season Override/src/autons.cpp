@@ -49,57 +49,98 @@ wristAutoControl = !wristAutoControl;
     pros::delay(200);
     pullToggle.retract();
     // chassis.swingToHeading(-65, DriveSide::LEFT, 1500, {.maxSpeed = 110, .minSpeed = 100});
-    cascadelift(12000, 300);
-    chassis.moveToPose(-15.4, 13, -110, 2000, {.maxSpeed = 127, .minSpeed = 80});
-        pros::delay(600);
-    cascadelift(-10000, 800);
+    cascadelift(12000, 1000);
+    chassis.moveToPose(-15.4, 13, -110, 1800, {.maxSpeed = 127, .minSpeed = 80});
+        pros::delay(550);
+    cascadelift(-10000, 750);
     claw.move_velocity(-12000);
 pros::delay(300);
     // pros::delay(500);
     clawPiston.extend();
-    // chassis.moveToPoint(-14.5, 14, 2000, {.maxSpeed = 95, .minSpeed = 30});
-    chassis.turnToHeading(-90, 500);
 
-
-    //     claw.move_velocity(2000);
-    // clawPiston.extend();
-    // cascadelift(-12000, 200);
+    chassis.turnToHeading(-90, 200);
 
 
 
     chassis.moveToPoint(5, 12, 1000, {.forwards = false, .maxSpeed = 120, .minSpeed = 40});
-wristSet(9000);
+wristSet(9500);
 pros::delay(700);
 wristRotation.set_position(0);
 wristAutoControl = !wristAutoControl;
 cascadelift(-12000, 600);
 claw.move_velocity(12000);
 
-    chassis.turnToHeading(-33, 1000);
-    chassis.moveToPoint(-20, 45.6, 1000, {.maxSpeed = 65, .minSpeed = 30});
-    pros::delay(1050);
-clawPiston.retract();
-pros::delay(750);
-    cascadelift(12000, 600);
-    chassis.turnToHeading(180, 1000);
-    chassis.moveToPoint(-8, 15, 1000, {.maxSpeed = 80, .minSpeed = 30});
-    pros::delay(600);
-    cascadelift(-10000, 600);
-    clawPiston.extend();
-    pros::delay(200);
-    chassis.moveToPoint(-12, 25, 1000, {.forwards = false, .maxSpeed = 90, .minSpeed = 30});
-    chassis.turnToHeading(-135, 500);
-cascadelift(-12000, 600);
-    chassis.moveToPoint(-29.25, 11, 1000, {.maxSpeed = 65, .minSpeed = 30});
-    pros::delay(550);
-        clawPiston.retract();
-        pros::delay(500);
-        chassis.turnToHeading(90, 500, {.maxSpeed = 90});
-        cascadelift(12000, 1000);
-        pros::delay(200);
-        chassis.moveToPoint(-10, 12, 1000, {.maxSpeed = 127, .minSpeed = 50});
-        pros::delay(700);
-        cascadelift(-10000, 400);
-        clawPiston.extend();
+//     chassis.turnToHeading(-33, 1000);
+//     chassis.moveToPoint(-20, 47.5, 1000, {.maxSpeed = 65, .minSpeed = 30});
+//     pros::delay(1050);
+// clawPiston.retract();
+// pros::delay(750);
+//     cascadelift(12000, 600);
+//     chassis.turnToHeading(180, 1000);
+//     chassis.moveToPoint(-8, 15, 1000, {.maxSpeed = 80, .minSpeed = 30});
+//     pros::delay(600);
+//     cascadelift(-10000, 600);
+//     clawPiston.extend();
+//     pros::delay(200);
+//     chassis.moveToPoint(-12, 27, 1000, {.forwards = false, .maxSpeed = 90, .minSpeed = 30});
+//     chassis.turnToHeading(-127, 500);
+// cascadelift(-12000, 600);
+//     chassis.moveToPoint(-29.25, 11, 1000, {.maxSpeed = 65, .minSpeed = 30});
+//     pros::delay(650);
+//         clawPiston.retract();
+//         pros::delay(500);
+//         chassis.turnToHeading(90, 500, {.maxSpeed = 90});
+//         cascadelift(12000, 1000);
+//         pros::delay(200);
+//         chassis.moveToPoint(-10, 12, 1000, {.maxSpeed = 127, .minSpeed = 50});
+//         pros::delay(700);
+//         cascadelift(-10000, 400);
+//         clawPiston.extend();
 
 } 
+
+void wallPins() {
+wristAutoControl = !wristAutoControl;
+    chassis.setPose(2,2,-55);
+    pullToggle.extend();
+    pros::delay(200);
+
+    chassis.swingToHeading(0, DriveSide::LEFT, 2000, {.maxSpeed = 110, .minSpeed = 100});
+    pros::delay(400);
+    chassis.setPose(0, 0, 0);
+    pros::delay(200);
+    pullToggle.retract();
+    // chassis.swingToHeading(-65, DriveSide::LEFT, 1500, {.maxSpeed = 110, .minSpeed = 100});
+    cascadelift(12000, 300);
+    chassis.moveToPoint(-12, 11, 1800, {.maxSpeed = 127, .minSpeed = 80});
+        pros::delay(550);
+    cascadelift(-10000, 800);
+    claw.move_velocity(-12000);
+pros::delay(300);
+    // pros::delay(500);
+    clawPiston.extend();
+    // chassis.moveToPoint(-14.5, 14, 2000, {.maxSpeed = 95, .minSpeed = 30});
+    chassis.turnToHeading(0, 500);
+            wristSet(90000);
+            pros::delay(500);
+
+
+
+        wristRotation.set_position(0);
+wristAutoControl = !wristAutoControl;
+clawPiston.retract();
+twoBarSet(286);
+claw.move_velocity(12000);
+chassis.moveToPoint(-18, 0, 500, {.forwards = false});
+twoBarSet(60);
+wristAutoControl = !wristAutoControl;
+wristSet(180);
+cascadelift(12000, 300);
+chassis.moveToPoint(-18, 5, 500);
+cascadelift(-10000, 400);
+clawPiston.extend();
+
+
+
+
+}

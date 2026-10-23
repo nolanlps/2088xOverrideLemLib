@@ -29,9 +29,9 @@ lemlib::ControllerSettings linearController(11, // proportional gain (kP)
 );
 
 // angular motion controller
-lemlib::ControllerSettings angularController(3.7, // proportional gain (kP)
+lemlib::ControllerSettings angularController(3.5, // proportional gain (kP)
                                              0, // integral gain (kI)
-                                             13, // derivative gain (kD)
+                                             14, // derivative gain (kD)
                                              3, // anti windup
                                              1, // small error range, in degrees
                                              100, // small error range timeout, in milliseconds
@@ -60,6 +60,6 @@ pros::Rotation two_barRotation(7);
 pros::Motor wrist(20); // rotates the claw at the end of the twobar(5.5)
 pros::Rotation wristRotation(-16);
 pros::Motor claw(2); // its a claw(5.5)
-pros::adi::Encoder encoder({17, 'B', 'C'}, true);
-pros::adi::Pneumatics clawPiston({17, 'A'}, false); // starts retracted
+pros::adi::Encoder encoder({18, 'B', 'C'}, true);
+pros::adi::Pneumatics clawPiston({18, 'A'}, false); // starts retracted
 pros::adi::Pneumatics pullToggle('h', false);

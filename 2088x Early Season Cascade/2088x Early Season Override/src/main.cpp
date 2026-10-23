@@ -137,16 +137,21 @@ void opcontrol() {
 // }
 
 		// two bar: L1 cycles the arm through its preset positions
-		if (master.get_digital(DIGITAL_Y)) {
+		if (master.get_digital(DIGITAL_RIGHT)) {
 pullToggle.extend();
 		} else {
 			pullToggle.retract();
 		}
 		
-		if (master.get_digital(DIGITAL_RIGHT)) {
+		if (master.get_digital(DIGITAL_Y)) {
 			claw.move_voltage(0);
 			clawPiston.extend();
-		} else {
+		} else if (master.get_digital(DIGITAL_B)) {
+			claw.move_voltage(-12000);
+			clawPiston.retract();
+		}
+		
+		else {
 			claw.move_voltage(0);
 			clawPiston.retract();
 		}
@@ -161,13 +166,13 @@ twoBarSet(286);
 			claw.move_voltage(12000);
 // backMatchloadCycle();
 		}
-		if (master.get_digital(DIGITAL_L1)) {
-twoBarSet(180);
+		if (master.get_digital(DIGITAL_R2)) {
+twoBarSet(172);
 claw.move_voltage(12000);
 		} 
 if (master.get_digital(DIGITAL_L2)) {
 	cascade_intake.move_voltage(-12000);
-} else if (master.get_digital(DIGITAL_R2)) {
+} else if (master.get_digital(DIGITAL_L1)) {
 			cascade_intake.move_voltage(12000);
 		} else {
 cascade_intake.move_voltage(0);
